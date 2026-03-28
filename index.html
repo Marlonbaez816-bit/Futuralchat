@@ -3,43 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Futuralchat - Firebase Edition</title>
+    <title>Private Chat Security</title>
     <style>
-        /* Diseño oscuro y moderno */
-        body { font-family: 'Segoe UI', sans-serif; background: #0b141a; color: white; margin: 0; display: flex; flex-direction: column; height: 100vh; }
-        header { background: #202c33; padding: 15px; text-align: center; font-weight: bold; font-size: 1.2em; border-bottom: 1px solid #374045; color: #00a884; }
-        
-        #contenedor-chat { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; background-image: url('https://user-images.githubusercontent.com'); /* Fondo tipo WhatsApp */ background-attachment: fixed; }
-        
-        .burbuja { background: #202c33; padding: 10px 15px; border-radius: 10px; max-width: 80%; width: fit-content; align-self: flex-start; box-shadow: 0 1px 2px rgba(0,0,0,0.3); }
-        .burbuja b { display: block; color: #00a884; font-size: 0.85em; margin-bottom: 4px; }
-        
-        .area-entrada { background: #202c33; padding: 10px; display: flex; gap: 10px; align-items: center; }
-        input { flex: 1; background: #2a3942; border: none; padding: 12px; border-radius: 20px; color: white; outline: none; font-size: 1em; }
-        button { background: #00a884; color: #0b141a; border: none; width: 45px; height: 45px; border-radius: 50%; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        /* Paleta de Colores: Blanco y Púrpura */
+        :root {
+            --bg-principal: #ffffff;
+            --purpura-apple: #a370f7; /* Púrpura vibrante */
+            --purpura-suave: #f3ebff;
+            --texto: #1d1d1f;
+        }
+
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background: var(--bg-principal); 
+            color: var(--texto); 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        header { 
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 20px; 
+            text-align: center; 
+            color: var(--purpura-apple);
+            font-weight: 700;
+            font-size: 1.1em;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #eee;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        #pantalla-chat { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px;
+            scroll-behavior: smooth;
+        }
+
+        /* --- ANIMACIÓN ESTILO AIRDROP --- */
+        @keyframes airdropIn {
+            0% { opacity: 0; transform: scale(0.5) translateY(20px); }
+            70% { transform: scale(1.05) translateY(-2px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .burbuja {
+            padding: 12px 18px;
+            border-radius: 20px;
+            max-width: 75%;
+            font-size: 0.95em;
+            line-height: 1.4;
+            position: relative;
+            animation: airdropIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Efecto rebote */
+            word-wrap: break-word;
+            box-shadow: 0 4px 15px rgba(163, 112, 247, 0.1);
+        }
+
+        /* Mensaje recibido (Blanco/Gris suave) */
+        .recibido {
+            background: #f2f2f7;
+            align-self: flex-start;
+            color: #000;
+            border-bottom-left-radius: 5px;
+        }
+
+        /* Mensaje enviado (Púrpura) */
+        .enviado {
+            background: var(--purpura-apple);
+            align-self: flex-end;
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .burbuja b {
+            display: block;
+            font-size: 0.7em;
+            margin-bottom: 4px;
+            opacity: 0.8;
+            text-transform: uppercase;
+        }
+
+        .area-entrada { 
+            padding: 20px; 
+            display: flex; 
+            gap: 12px; 
+            background: white;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        input { 
+            flex: 1; 
+            padding: 14px 20px; 
+            border: 1.5px solid #eee; 
+            border-radius: 30px; 
+            outline: none; 
+            transition: border 0.3s;
+            font-size: 1em;
+        }
+
+        input:focus { border-color: var(--purpura-apple); }
+
+        button { 
+            background: var(--purpura-apple); 
+            color: white; 
+            border: none; 
+            padding: 0 25px; 
+            border-radius: 30px; 
+            cursor: pointer; 
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        button:active { transform: scale(0.9); }
     </style>
 </head>
 <body>
 
-    <header>FUTURALCHAT</header>
+    <header>PRIVATE CHAT SECURITY</header>
 
-    <div id="contenedor-chat">
-        <!-- Los mensajes aparecerán aquí automáticamente -->
-    </div>
+    <div id="pantalla-chat"></div>
 
     <div class="area-entrada">
-        <input type="text" id="mensaje-input" placeholder="Escribe un mensaje..." autocomplete="off">
-        <button onclick="enviarMensaje()">
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M1.101 21.757L23.8 12.028 1.101 2.3l.011 7.912 13.623 1.816-13.623 1.817-.011 7.912z"></path></svg>
-        </button>
+        <input type="text" id="mensaje-input" placeholder="Escribe un mensaje seguro..." autocomplete="off">
+        <button onclick="enviar()">Enviar</button>
     </div>
 
-    <!-- CONEXIÓN A FIREBASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com";
         import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com";
 
-        // Tu configuración de la imagen
         const firebaseConfig = {
             apiKey: "AIzaSyBViXmpHDthxQog-p79Bv9TwSCS1EYbjPU",
             authDomain: "futuralchat.firebaseapp.com",
@@ -53,46 +154,45 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- FUNCIÓN PARA ENVIAR ---
-        window.enviarMensaje = async () => {
+        // Identificación de sesión personal (Nombre único por teléfono)
+        let miNombre = localStorage.getItem("user_nick");
+        if (!miNombre) {
+            miNombre = prompt("Tu nombre para Private Chat:") || "Agente";
+            localStorage.setItem("user_nick", miNombre);
+        }
+
+        // --- ENVIAR ---
+        window.enviar = async () => {
             const input = document.getElementById("mensaje-input");
-            const texto = input.value.trim();
-            
-            if (texto !== "") {
-                try {
-                    await addDoc(collection(db, "mensajes"), {
-                        usuario: "Invitado",
-                        mensaje: texto,
-                        hora: serverTimestamp()
-                    });
-                    input.value = ""; // Limpia el cuadro
-                } catch (e) {
-                    console.error("Error al enviar: ", e);
-                }
-            }
+            if (input.value.trim() === "") return;
+
+            try {
+                await addDoc(collection(db, "mensajes_seguros"), {
+                    user: miNombre,
+                    msg: input.value,
+                    time: serverTimestamp()
+                });
+                input.value = "";
+            } catch (e) { console.error(e); }
         };
 
-        // Escuchar la tecla "Enter" para enviar
-        document.getElementById("mensaje-input").addEventListener("keypress", (e) => {
-            if (e.key === "Enter") enviarMensaje();
-        });
-
-        // --- FUNCIÓN PARA LEER (TIEMPO REAL) ---
-        const q = query(collection(db, "mensajes"), orderBy("hora", "asc"));
+        // --- RECIBIR Y ANIMAR ---
+        const q = query(collection(db, "mensajes_seguros"), orderBy("time", "asc"));
         onSnapshot(q, (snapshot) => {
-            const chatDiv = document.getElementById("contenedor-chat");
-            chatDiv.innerHTML = ""; // Limpiar antes de actualizar
-            
+            const container = document.getElementById("pantalla-chat");
+            container.innerHTML = "";
             snapshot.forEach((doc) => {
-                const data = doc.data();
+                const d = doc.data();
                 const div = document.createElement("div");
-                div.className = "burbuja";
-                div.innerHTML = `<b>${data.usuario}</b> ${data.mensaje}`;
-                chatDiv.appendChild(div);
+                
+                // Si el nombre es el mío, burbuja púrpura a la derecha. Si no, gris a la izquierda.
+                const esMio = d.user === miNombre;
+                div.className = `burbuja ${esMio ? 'enviado' : 'recibido'}`;
+                
+                div.innerHTML = `<b>${d.user}</b>${d.msg}`;
+                container.appendChild(div);
             });
-            
-            // Auto-scroll al último mensaje
-            chatDiv.scrollTop = chatDiv.scrollHeight;
+            container.scrollTop = container.scrollHeight;
         });
     </script>
 </body>
