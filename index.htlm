@@ -2,179 +2,193 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>FuturalChat P2P</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>FuturalChat Pro P2P</title>
     <style>
-        /* ESTILO FUTURISTA CON DESENFOQUE (GLASSMORPHISM) */
-        body { margin: 0; background: #000; font-family: -apple-system, sans-serif; color: white; overflow-x: hidden; }
-        .glass { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 20px; margin: 10px; }
+        :root { --blue: #007aff; --red: #ff3b30; --green: #34c759; --glass: rgba(255, 255, 255, 0.1); }
+        body { margin: 0; background: #000; font-family: -apple-system, sans-serif; color: white; overflow-x: hidden; display: flex; flex-direction: column; height: 100vh; }
         
-        /* ANIMACIÓN DE CHOQUE TIPO AIRDROP */
-        .preview { position: fixed; top: 20px; left: 5%; width: 90%; background: rgba(255,255,255,0.2); backdrop-filter: blur(25px); border-radius: 20px; padding: 15px; z-index: 10000; display: none; border: 1px solid rgba(255,255,255,0.3); animation: choque 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        @keyframes choque { 0% { transform: translateY(-100px) scale(0.8); opacity: 0; } 70% { transform: translateY(10px) scale(1.05); } 100% { transform: translateY(0) scale(1); opacity: 1; } }
+        .glass { background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 15px; margin: 10px; }
 
-        /* PANEL DE LLAMADA */
-        #panel-llamada { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); backdrop-filter: blur(40px); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; }
-        video { width: 90%; border-radius: 20px; background: #111; margin-top: 10px; box-shadow: 0 0 20px rgba(0,122,255,0.3); }
+        /* CHAT INFINITO */
+        #chat-historial { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 15px; padding-bottom: 80px; }
+        .msg { padding: 12px; border-radius: 18px; max-width: 85%; font-size: 15px; position: relative; animation: aparece 0.3s ease; word-wrap: break-word; }
+        .msg.mio { background: var(--blue); align-self: flex-end; border-bottom-right-radius: 4px; }
+        .msg.otro { background: rgba(255,255,255,0.15); align-self: flex-start; border-bottom-left-radius: 4px; }
+        .msg img, .msg video { width: 100%; border-radius: 12px; margin-top: 5px; }
+
+        /* NOTIFICACIÓN CHOQUE */
+        .preview { position: fixed; top: 20px; left: 5%; width: 90%; background: rgba(255,255,255,0.25); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-radius: 20px; padding: 15px; z-index: 10000; display: none; border: 1px solid rgba(255,255,255,0.3); animation: choque 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes choque { 0% { transform: translateY(-100px) scale(0.8); } 70% { transform: translateY(10px) scale(1.02); } 100% { transform: translateY(0) scale(1); } }
+
+        /* CONTROLES */
+        .input-area { position: fixed; bottom: 0; width: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(20px); padding: 10px; display: flex; align-items: center; gap: 8px; box-sizing: border-box; }
+        input { background: rgba(255,255,255,0.1); border: none; color: white; padding: 12px; border-radius: 20px; flex: 1; outline: none; }
         
-        .btn { padding: 15px; border-radius: 15px; border: none; color: white; font-weight: bold; width: 100%; margin: 5px 0; font-size: 16px; }
-        .btn-blue { background: #007aff; } .btn-red { background: #ff3b30; } .btn-green { background: #34c759; }
-        input { background: rgba(255,255,255,0.1); border: none; color: white; padding: 12px; border-radius: 10px; width: 85%; margin-bottom: 10px; }
+        #panel-llamada { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.95); backdrop-filter: blur(40px); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; }
+        .btn-circle { width: 50px; height: 50px; border-radius: 50%; border: none; color: white; font-size: 20px; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
-    <!-- NOTIFICACIÓN DE CHOQUE GLOBAL -->
     <div id="notificacion" class="preview">
-        <b id="nt-alias" style="color: #007aff;">Sistema</b>
-        <p id="nt-msg" style="margin: 5px 0;">Iniciando...</p>
-        <div id="nt-foto-cont"></div>
+        <b id="nt-alias" style="color: var(--blue);">Sistema</b>
+        <p id="nt-msg" style="margin: 5px 0; font-size: 14px;"></p>
     </div>
 
-    <!-- CONFIGURACIÓN DE PERFIL -->
-    <div class="glass">
-        <h2 style="margin-top:0;">ID: <span id="mi-id" style="color:#007aff">-----</span></h2>
-        <input type="text" id="alias" placeholder="Escribe tu Alias">
-        <button class="btn btn-blue" onclick="guardarPerfil()">Guardar en el Teléfono</button>
-    </div>
-
-    <!-- CENTRO DE CONEXIÓN Y MENSAJES -->
-    <div class="glass">
-        <button class="btn btn-blue" onclick="iniciarLlamada()">1. Generar Llave (Llamar)</button>
-        <button class="btn btn-green" onclick="pegarLlave()">2. Pegar Llave / Respuesta</button>
-        
-        <hr style="opacity:0.1; margin: 20px 0;">
-        
-        <input type="text" id="msj-input" placeholder="Mensaje rápido...">
-        <div style="display:flex; gap:10px;">
-            <button onclick="enviarMensaje()" style="flex:1; padding:10px; border-radius:10px; background:#444; color:white; border:none;">Enviar</button>
-            <button onclick="document.getElementById('foto-chat').click()" style="flex:1; padding:10px; border-radius:10px; background:#007aff; color:white; border:none;">📷 Foto</button>
-            <input type="file" id="foto-chat" accept="image/*" style="display:none" onchange="procesarFoto(this)">
-        </div>
-
-        <div style="margin-top:20px; text-align:center;">
-            <button id="btn-voz" onclick="toggleVoz()" style="background:#ff3b30; border-radius:50%; width:65px; height:65px; border:none; font-size:28px; box-shadow: 0 4px 15px rgba(255,59,48,0.4);">🎤</button>
-            <p id="voz-status" style="font-size:12px; color:#888; margin-top:8px;">Mensaje de Voz Local</p>
+    <!-- CABECERA -->
+    <div class="glass" style="margin-bottom: 0;">
+        <div style="display:flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin:0;">ID: <span id="mi-id" style="color:var(--blue)">-----</span></h3>
+            <button onclick="iniciarLlamada()" style="background:var(--blue); border:none; color:white; padding:8px 15px; border-radius:10px;">Llamar</button>
+            <button onclick="pegarLlave()" style="background:var(--green); border:none; color:white; padding:8px 15px; border-radius:10px;">Conectar</button>
         </div>
     </div>
 
-    <!-- PANEL DE LLAMADA FUTURISTA -->
+    <!-- AREA DE CHAT -->
+    <div id="chat-historial"></div>
+
+    <!-- BARRA DE ENTRADA -->
+    <div class="input-area">
+        <button class="btn-circle" style="background:#444" onclick="document.getElementById('file-input').click()">➕</button>
+        <input type="file" id="file-input" style="display:none" onchange="enviarArchivo(this)">
+        <input type="text" id="msj-input" placeholder="Mensaje...">
+        <button id="btn-voz" class="btn-circle" style="background:var(--red)" onclick="toggleVoz()">🎤</button>
+        <button class="btn-circle" style="background:var(--blue)" onclick="enviarMensaje()">🚀</button>
+    </div>
+
     <div id="panel-llamada">
-        <h1 id="ll-alias" style="margin-bottom:5px;">En Llamada</h1>
-        <p id="ll-id" style="opacity:0.5; margin-bottom:20px;">ID: 00000</p>
-        
-        <select id="calidad" onchange="cambiarCalidad(this.value)" style="background:#333; color:white; padding:10px; border-radius:10px; border:none; margin-bottom:15px;">
-            <option value="144">Calidad: 144p (Ahorro Cuba)</option>
-            <option value="360" selected>Calidad: 360p (Estándar)</option>
-            <option value="720">Calidad: 720p (HD)</option>
-        </select>
-
-        <video id="v-remoto" autoplay playsinline></video>
-        
-        <div style="width:80%; margin-top:30px;">
-            <button class="btn btn-red" onclick="cerrarLlamada()">Colgar Llamada</button>
+        <h2 id="ll-alias">Llamada</h2>
+        <video id="v-remoto" autoplay playsinline style="width:90%; border-radius:20px;"></video>
+        <div style="margin-top:20px; display:flex; gap:20px;">
+            <button class="btn-circle" style="background:var(--red); width:70px; height:70px;" onclick="cerrarLlamada()">✖</button>
+            <select id="calidad" onchange="cambiarCalidad(this.value)" style="background:#333; color:white; border-radius:10px; padding:10px; border:none;">
+                <option value="144">144p</option>
+                <option value="360" selected>360p</option>
+                <option value="720">720p HD</option>
+            </select>
         </div>
     </div>
 
     <script>
-        // CONFIGURACIÓN INICIAL
+        let db;
         let peerConnection = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
         let dataChannel;
 
-        if(!localStorage.getItem('myID')) {
-            localStorage.setItem('myID', Math.floor(10000 + Math.random() * 90000));
-        }
+        // 1. INICIALIZAR BASE DE DATOS (INDEXEDDB)
+        const request = indexedDB.open("FuturalChatDB", 1);
+        request.onupgradeneeded = e => {
+            db = e.target.result;
+            db.createObjectStore("mensajes", { keyPath: "id", autoIncrement: true });
+        };
+        request.onsuccess = e => {
+            db = e.target.result;
+            cargarHistorialCompleto();
+        };
+
+        if(!localStorage.getItem('myID')) localStorage.setItem('myID', Math.floor(10000 + Math.random() * 90000));
         document.getElementById('mi-id').innerText = localStorage.getItem('myID');
 
-        function guardarPerfil() {
-            localStorage.setItem('alias', document.getElementById('alias').value);
-            alert("Perfil guardado en tu " + (navigator.platform.includes('iPhone') ? 'iPhone' : 'Redmi'));
+        // 2. GUARDAR Y CARGAR
+        function guardarMensajeDB(obj) {
+            const trans = db.transaction(["mensajes"], "readwrite");
+            trans.objectStore("mensajes").add(obj);
         }
 
-        // SISTEMA DE CHOQUE (NOTIFICACIONES)
-        function mostrarChoque(alias, msg, foto = null) {
-            document.getElementById('nt-alias').innerText = alias;
-            document.getElementById('nt-msg').innerText = msg;
-            const contFoto = document.getElementById('nt-foto-cont');
-            contFoto.innerHTML = foto ? `<img src="${foto}" style="width:100%; border-radius:15px; margin-top:10px; filter:blur(5px); transition:0.3s;" id="img-choque">` : '';
+        function cargarHistorialCompleto() {
+            const trans = db.transaction(["mensajes"], "readonly");
+            const store = trans.objectStore("mensajes");
+            store.openCursor().onsuccess = e => {
+                const cursor = e.target.result;
+                if(cursor) {
+                    renderizarMensaje(cursor.value, false);
+                    cursor.continue();
+                }
+            };
+        }
+
+        function renderizarMensaje(d, scroll = true) {
+            const hist = document.getElementById('chat-historial');
+            const div = document.createElement('div');
+            div.className = `msg ${d.clase}`;
+            let contenido = `<b>${d.alias}:</b><br>`;
             
-            const nt = document.getElementById('notificacion');
-            nt.style.display = 'block';
-            if(navigator.vibrate) navigator.vibrate([100, 50, 100]); // Choque táctil
-
-            setTimeout(() => { if(document.getElementById('img-choque')) document.getElementById('img-choque').style.filter = 'blur(0)'; }, 300);
-            setTimeout(() => { nt.style.display = 'none'; }, 5000);
+            if(d.tipo === 'texto') contenido += d.valor;
+            if(d.tipo === 'foto') contenido += `<img src="${d.valor}" onclick="window.open(this.src)">`;
+            if(d.tipo === 'video') contenido += `<video src="${d.valor}" controls></video>`;
+            if(d.tipo === 'voz') contenido += `<audio src="${d.valor}" controls></audio>`;
+            
+            div.innerHTML = contenido;
+            hist.appendChild(div);
+            if(scroll) hist.scrollTop = hist.scrollHeight;
         }
 
-        // LÓGICA DE CONEXIÓN P2P
+        // 3. COMUNICACIÓN P2P
         async function iniciarLlamada() {
             dataChannel = peerConnection.createDataChannel("chat");
-            configurarCanal(dataChannel);
+            setupCanal(dataChannel);
             const offer = await peerConnection.createOffer();
             await peerConnection.setLocalDescription(offer);
-            prompt("COPIA esta llave y envíala a tu contacto:", btoa(JSON.stringify(offer)));
+            prompt("Envía tu LLAVE:", btoa(JSON.stringify(offer)));
+            document.getElementById('panel-llamada').style.display = 'flex';
         }
 
         async function pegarLlave() {
-            const raw = prompt("PEGA la llave aquí:");
+            const raw = prompt("Pega llave o respuesta:");
             if(!raw) return;
             const desc = JSON.parse(atob(raw));
             if(desc.type === "offer") {
                 await peerConnection.setRemoteDescription(new RTCSessionDescription(desc));
-                const answer = await peerConnection.createAnswer();
-                await peerConnection.setLocalDescription(answer);
-                prompt("COPIA esta RESPUESTA y envíala de vuelta:", btoa(JSON.stringify(answer)));
+                const res = await peerConnection.createAnswer();
+                await peerConnection.setLocalDescription(res);
+                prompt("Envía esta RESPUESTA:", btoa(JSON.stringify(res)));
             } else {
                 await peerConnection.setRemoteDescription(new RTCSessionDescription(desc));
-                mostrarChoque("Sistema", "¡Conectado con éxito!");
+                mostrarChoque("Sistema", "¡Conectado!");
             }
         }
 
-        function configurarCanal(canal) {
+        function setupCanal(canal) {
             canal.onmessage = e => {
                 const d = JSON.parse(e.data);
-                if(d.type === "foto") mostrarChoque(d.alias, "📷 Foto recibida", d.data);
-                else if(d.type === "voz") mostrarChoque(d.alias, "🎤 Mensaje de voz");
-                else mostrarChoque(d.alias, d.texto);
+                const obj = { alias: d.alias, valor: d.valor, tipo: d.tipo, clase: 'otro' };
+                guardarMensajeDB(obj);
+                renderizarMensaje(obj);
+                mostrarChoque(d.alias, "Nuevo mensaje recibido");
             };
         }
+        peerConnection.ondatachannel = e => { dataChannel = e.channel; setupCanal(dataChannel); };
 
-        peerConnection.ondatachannel = e => { dataChannel = e.channel; configurarCanal(dataChannel); };
-
-        // ENVÍO DE DATOS
         function enviarMensaje() {
-            const txt = document.getElementById('msj-input').value;
-            if(dataChannel && txt) {
-                dataChannel.send(JSON.stringify({ texto: txt, alias: localStorage.getItem('alias') || 'Anon' }));
-                mostrarChoque("Tú", txt);
-                document.getElementById('msj-input').value = '';
-            }
+            const val = document.getElementById('msj-input').value;
+            if(!val || !dataChannel) return;
+            const obj = { alias: "Yo", valor: val, tipo: 'texto', clase: 'mio' };
+            dataChannel.send(JSON.stringify(obj));
+            guardarMensajeDB(obj);
+            renderizarMensaje(obj);
+            document.getElementById('msj-input').value = '';
         }
 
-        function procesarFoto(input) {
+        function enviarArchivo(input) {
+            const file = input.files[0];
+            const tipo = file.type.split('/')[0]; // foto o video
             const reader = new FileReader();
             reader.onload = e => {
-                const base64 = e.target.result;
-                if(dataChannel) dataChannel.send(JSON.stringify({ type: "foto", data: base64, alias: localStorage.getItem('alias') }));
-                mostrarChoque("Tú", "Enviando foto...", base64);
+                const obj = { alias: "Yo", valor: e.target.result, tipo: tipo === 'image' ? 'foto' : 'video', clase: 'mio' };
+                if(dataChannel) dataChannel.send(JSON.stringify(obj));
+                guardarMensajeDB(obj);
+                renderizarMensaje(obj);
             };
-            reader.readAsDataURL(input.files[0]);
+            reader.readAsDataURL(file);
         }
 
-        // MENSAJES DE VOZ
-        let rec; let chunks = [];
-        async function toggleVoz() {
-            const btn = document.getElementById('btn-voz');
-            if(!rec || rec.state === 'inactive') {
-                const s = await navigator.mediaDevices.getUserMedia({audio:true});
-                rec = new MediaRecorder(s);
-                rec.ondataavailable = e => chunks.push(e.data);
-                rec.onstop = () => {
-                    mostrarChoque("Tú", "🎤 Mensaje de voz enviado");
-                    // Aquí se enviaría el audio como base64
-                };
-                chunks = []; rec.start(); btn.style.background = "#34c759";
-            } else { rec.stop(); btn.style.background = "#ff3b30"; }
+        function mostrarChoque(alias, msg) {
+            document.getElementById('nt-alias').innerText = alias;
+            document.getElementById('nt-msg').innerText = msg;
+            const nt = document.getElementById('notificacion');
+            nt.style.display = 'block';
+            if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
+            setTimeout(() => nt.style.display = 'none', 3000);
         }
 
         function cerrarLlamada() { document.getElementById('panel-llamada').style.display = 'none'; }
