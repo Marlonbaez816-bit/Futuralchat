@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Futuralchat Mobile</title>
+    <title>Futuralchat - Verificado</title>
     
-    <!-- Firebase SDKs -->
+    <!-- Scripts de Firebase (Carga Prioritaria) -->
     <script src="https://www.gstatic.com"></script>
     <script src="https://www.gstatic.com"></script>
 
     <style>
-        /* ESTILO IPDROP OPTIMIZADO PARA MÓVIL */
+        /* ESTILO IPDROP / GLASSMORPHISM */
         :root {
-            --glass: rgba(255, 255, 255, 0.12);
+            --glass: rgba(255, 255, 255, 0.1);
             --border: rgba(255, 255, 255, 0.2);
             --accent: #4ecca3;
         }
@@ -20,9 +20,8 @@
         body {
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: #0f172a;
-            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: radial-gradient(circle at top right, #1b262c, #0f4c75);
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -31,204 +30,207 @@
             overflow: hidden;
         }
 
-        .mobile-card {
+        .glass-card {
             background: var(--glass);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--border);
-            border-radius: 28px;
+            border-radius: 30px;
             padding: 25px;
             width: 85%;
-            max-width: 350px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            max-width: 360px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
             text-align: center;
-            position: relative;
+            animation: slideUp 0.6s ease-out;
         }
 
-        /* CARTELITO VERIFICADO ESTILO FLOTANTE */
+        /* CARTELITO VERIFICADO */
         .verified-badge {
-            background: #0084ff;
+            background: #007bff;
             color: white;
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 800;
-            padding: 4px 12px;
+            padding: 5px 15px;
             border-radius: 50px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
             display: inline-block;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 12px rgba(0, 132, 255, 0.4);
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+            text-transform: uppercase;
         }
 
-        .auth-tabs {
+        /* PESTAÑAS DE NAVEGACIÓN */
+        .tabs {
             display: flex;
             background: rgba(0, 0, 0, 0.2);
-            border-radius: 12px;
+            border-radius: 15px;
             margin-bottom: 20px;
-            padding: 4px;
+            padding: 5px;
         }
 
         .tab-btn {
             flex: 1;
-            padding: 10px;
+            padding: 12px;
             border: none;
             background: transparent;
             color: #94a3b8;
-            font-weight: 600;
+            font-weight: bold;
             font-size: 14px;
-            border-radius: 10px;
+            border-radius: 12px;
+            cursor: pointer;
             transition: 0.3s;
         }
 
         .tab-btn.active {
             background: var(--accent);
-            color: #0f172a;
+            color: #1b262c;
         }
 
+        /* INPUTS Y BOTONES */
         input {
             width: 100%;
             box-sizing: border-box;
-            background: rgba(15, 23, 42, 0.6);
+            background: rgba(0, 0, 0, 0.3);
             border: 1px solid var(--border);
-            padding: 14px;
-            margin: 8px 0;
-            border-radius: 14px;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 15px;
             color: white;
-            font-size: 16px; /* Evita zoom automático en iPhone */
+            font-size: 16px; /* Evita zoom molesto en móvil */
             outline: none;
         }
 
-        button.action-btn {
+        .btn-primary {
             width: 100%;
-            padding: 15px;
+            padding: 16px;
             background: var(--accent);
-            color: #0f172a;
+            color: #1b262c;
             border: none;
-            border-radius: 14px;
-            font-weight: bold;
+            border-radius: 15px;
+            font-weight: 800;
             font-size: 16px;
             margin-top: 15px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(78, 204, 163, 0.3);
+            box-shadow: 0 5px 15px rgba(78, 204, 163, 0.3);
         }
 
-        /* PERFIL DE USUARIO MÓVIL */
-        .user-profile {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .avatar {
-            width: 90px;
-            height: 90px;
+        /* PERFIL DE USUARIO */
+        .profile-img {
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             border: 4px solid var(--accent);
             object-fit: cover;
-            margin-bottom: 12px;
+            margin: 0 auto 15px;
+            display: block;
         }
 
         .hidden { display: none; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <div class="mobile-card">
+    <div class="glass-card">
         <div class="verified-badge">✓ Verificado</div>
 
-        <!-- SECCIÓN DE ACCESO -->
-        <div id="section-auth">
-            <div class="auth-tabs">
-                <button id="t-login" class="tab-btn active" onclick="switchTab('login')">Entrar</button>
-                <button id="t-reg" class="tab-btn" onclick="switchTab('reg')">Registro</button>
+        <!-- SECCIÓN LOGIN/REGISTRO -->
+        <div id="auth-ui">
+            <div class="tabs">
+                <button id="btn-tab-login" class="tab-btn active" onclick="showTab('login')">Entrar</button>
+                <button id="btn-tab-reg" class="tab-btn" onclick="showTab('reg')">Registrarse</button>
             </div>
 
             <div id="form-login">
                 <input type="email" id="l-email" placeholder="Correo electrónico">
                 <input type="password" id="l-pass" placeholder="Contraseña">
-                <button class="action-btn" onclick="login()">Iniciar Sesión</button>
+                <button class="btn-primary" onclick="handleLogin()">Iniciar Sesión</button>
             </div>
 
             <div id="form-reg" class="hidden">
                 <input type="text" id="r-name" placeholder="Nombre completo">
-                <input type="text" id="r-photo" placeholder="Link de foto (Avatar)">
-                <input type="email" id="r-email" placeholder="Tu Email">
-                <input type="password" id="r-pass" placeholder="Tu Contraseña">
-                <button class="action-btn" onclick="register()">Crear Cuenta</button>
+                <input type="text" id="r-photo" placeholder="URL de tu foto (Avatar)">
+                <input type="email" id="r-email" placeholder="Correo">
+                <input type="password" id="r-pass" placeholder="Contraseña">
+                <button class="btn-primary" onclick="handleRegister()">Crear Cuenta</button>
             </div>
         </div>
 
-        <!-- SECCIÓN CUENTA ACTIVA -->
-        <div id="section-user" class="hidden">
-            <div class="user-profile">
-                <img id="u-avatar" src="" class="avatar">
-                <h3 id="u-name" style="margin: 5px 0;"></h3>
-                <p style="font-size: 13px; color: #94a3b8; margin-bottom: 20px;">Sesión protegida y activa</p>
-                <button class="action-btn" style="background: #ef4444; color: white;" onclick="logout()">Cerrar Sesión</button>
-            </div>
+        <!-- SECCIÓN PERFIL (SESIÓN ACTIVA) -->
+        <div id="user-ui" class="hidden">
+            <img id="u-photo" src="" class="profile-img">
+            <h2 id="u-name" style="margin: 5px 0;"></h2>
+            <p style="font-size: 13px; color: #4ecca3; margin-bottom: 25px;">Cuenta Verificada y Persistente</p>
+            <button class="btn-primary" style="background: #ef4444; color: white;" onclick="handleLogout()">Cerrar Sesión</button>
         </div>
     </div>
 
     <script>
-        // CONFIGURACIÓN DE TU IMAGEN
+        // CONFIGURACIÓN DE FIREBASE (Extraída de tu configuración activa)
         const firebaseConfig = {
-          apiKey: "AIzaSyBVlXapbDchsQog-d79Bv9Tw",
-          authDomain: "futuralchat.firebaseapp.com",
-          projectId: "futuralchat",
-          storageBucket: "futuralchat.firebasestorage.app",
-          messagingSenderId: "888367297347",
-          appId: "1:888367297347:web:s4abe58b20ec9e11516086"
+            apiKey: "AIzaSyBVlXapbDchsQog-d79Bv9Tw",
+            authDomain: "futuralchat.firebaseapp.com",
+            projectId: "futuralchat",
+            storageBucket: "futuralchat.firebasestorage.app",
+            messagingSenderId: "888367297347",
+            appId: "1:888367297347:web:s4abe58b20ec9e11516086"
         };
-        
+
+        // Inicialización segura
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        // PERSISTENCIA MÓVIL: Mantiene la sesión abierta al cerrar la app
+        // PERSISTENCIA: Controla el estado de la sesión
         auth.onAuthStateChanged((user) => {
+            const authUI = document.getElementById('auth-ui');
+            const userUI = document.getElementById('user-ui');
+
             if (user) {
-                document.getElementById('section-auth').classList.add('hidden');
-                document.getElementById('section-user').classList.remove('hidden');
+                authUI.classList.add('hidden');
+                userUI.classList.remove('hidden');
                 document.getElementById('u-name').innerText = user.displayName || "Usuario";
-                document.getElementById('u-avatar').src = user.photoURL || "https://cdn-icons-png.flaticon.com";
+                document.getElementById('u-photo').src = user.photoURL || "https://cdn-icons-png.flaticon.com";
             } else {
-                document.getElementById('section-auth').classList.remove('hidden');
-                document.getElementById('section-user').classList.add('hidden');
+                authUI.classList.remove('hidden');
+                userUI.classList.add('hidden');
             }
         });
 
-        function switchTab(mode) {
+        // FUNCIONES DE NAVEGACIÓN
+        function showTab(mode) {
             const isLogin = mode === 'login';
             document.getElementById('form-login').classList.toggle('hidden', !isLogin);
             document.getElementById('form-reg').classList.toggle('hidden', isLogin);
-            document.getElementById('t-login').classList.toggle('active', isLogin);
-            document.getElementById('t-reg').classList.toggle('active', !isLogin);
+            document.getElementById('btn-tab-login').classList.toggle('active', isLogin);
+            document.getElementById('btn-tab-reg').classList.toggle('active', !isLogin);
         }
 
-        async function register() {
-            const n = document.getElementById('r-name').value;
-            const ph = document.getElementById('r-photo').value;
-            const e = document.getElementById('r-email').value;
-            const p = document.getElementById('r-pass').value;
-            if(!n || !e || !p) return alert("Llena todos los datos");
+        // ACCIONES DE FIREBASE
+        async function handleRegister() {
+            const name = document.getElementById('r-name').value;
+            const photo = document.getElementById('r-photo').value;
+            const email = document.getElementById('r-email').value;
+            const pass = document.getElementById('r-pass').value;
+
+            if(!name || !email || !pass) return alert("Por favor, llena los campos básicos.");
 
             try {
-                const res = await auth.createUserWithEmailAndPassword(e, p);
-                await res.user.updateProfile({
-                    displayName: n,
-                    photoURL: ph || "https://cdn-icons-png.flaticon.com"
+                const cred = await auth.createUserWithEmailAndPassword(email, pass);
+                await cred.user.updateProfile({
+                    displayName: name,
+                    photoURL: photo || "https://cdn-icons-png.flaticon.com"
                 });
-                alert("Cuenta lista.");
+                alert("¡Cuenta creada correctamente!");
             } catch (err) { alert("Error: " + err.message); }
         }
 
-        function login() {
-            const e = document.getElementById('l-email').value;
-            const p = document.getElementById('l-pass').value;
-            auth.signInWithEmailAndPassword(e, p).catch(err => alert(err.message));
+        function handleLogin() {
+            const email = document.getElementById('l-email').value;
+            const pass = document.getElementById('l-pass').value;
+            auth.signInWithEmailAndPassword(email, pass).catch(err => alert("Error: " + err.message));
         }
 
-        function logout() {
-            auth.signOut().then(() => alert("Sesión cerrada"));
+        function handleLogout() {
+            auth.signOut().then(() => alert("Has cerrado la sesión."));
         }
     </script>
 </body>
