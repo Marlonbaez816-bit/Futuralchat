@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <title>FuturChat</title>
+</head>
+<body>
+
+    <!-- Pantalla de Perfil Personalizable -->
+    <div id="app">
+        <div class="perfil-config">
+            <h2>Mi ID: <span id="mi-id">-----</span></h2>
+            <input type="text" id="alias" placeholder="Tu Alias Futurista">
+            <input type="file" id="foto-input" accept="image/*">
+            <button onclick="guardarPerfil()">Guardar en Teléfono</button>
+        </div>
+
+        <!-- Botón para simular llamada (Prueba de Panel) -->
+        <button onclick="mostrarLlamada('12345', 'Usuario X')">Simular Llamada Entrante</button>
+    </div>
+
+    <!-- Panel de Llamada (Oculto por defecto) -->
+    <div id="panel-llamada" class="panel-llamada" style="display:none;">
+        <img id="llamada-foto" src="" class="avatar-perfil">
+        <h1 id="llamada-alias">Nombre</h1>
+        <p>ID: <span id="llamada-id">00000</span></p>
+        <div class="controles">
+            <button onclick="cerrarLlamada()" style="background:red;">Colgar</button>
+            <button style="background:green;">Responder</button>
+        </div>
+    </div>
+
+    <script>
+        // Generar ID de 5 dígitos si no existe
+        if(!localStorage.getItem('myID')) {
+            const nuevoID = Math.floor(10000 + Math.random() * 90000);
+            localStorage.setItem('myID', nuevoID);
+        }
+        document.getElementById('mi-id').innerText = localStorage.getItem('myID');
+
+        // Guardar foto localmente (IndexedDB simplificado)
+        function guardarPerfil() {
+            const alias = document.getElementById('alias').value;
+            localStorage.setItem('alias', alias);
+            alert("Datos guardados en tu " + (navigator.platform.includes('iPhone') ? 'iPhone' : 'Redmi'));
+        }
+
+        function mostrarLlamada(id, alias) {
+            document.getElementById('llamada-id').innerText = id;
+            document.getElementById('llamada-alias').innerText = alias;
+            document.getElementById('panel-llamada').style.display = 'flex';
+            // Efecto de vibración (Redmi)
+            if(navigator.vibrate) navigator.vibrate([500, 200, 500]);
+        }
+
+        function cerrarLlamada() {
+            document.getElementById('panel-llamada').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
