@@ -60,5 +60,67 @@
             document.getElementById('panel-llamada').style.display = 'none';
         }
     </script>
+// Configuración de Servidores de Paso (Gratuitos de Google para saltar firewalls)
+const configuration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+let peerConnection = new RTCPeerConnection(configuration);
+let dataChannel;
+
+// 1. CREAR CONEXIÓN (Para el que inicia la llamada)
+async function iniciarLlamada() {
+    dataChannel = peerConnection.createDataChannel("chat");
+    configurarCanal(dataChannel);
+
+    const offer = await peerConnection.createOffer();
+    await peerConnection.setLocalDescription(offer);
+    
+    // Este código largo es tu "llave". Debes enviársela al otro teléfono.
+    const llavePublica = btoa(JSON.stringify(offer));
+    prompt("Copia esta llave y envíala a tu otro teléfono por SMS/WhatsApp:", llavePublica);
+}
+
+// 2. RECIBIR LLAMADA (Para el que acepta)
+async function recibirLlamada(llaveRecibida) {
+    const offer = JSON.parse(atob(llaveRecibida));
+    await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+    
+    const answer = await peerConnection.createAnswer();
+    await peerConnection.setLocalDescription(answer);
+    
+    const respuestaLlave = btoa(JSON.stringify(answer));
+    prompt("Copia esta RESPUESTA y envíala de vuelta al iPhone:", respuestaLlave);
+}
+
+// 3. CONECTAR FINALMENTE
+async function finalizarConexion(respuestaRecibida) {
+    const answer = JSON.parse(atob(respuestaRecibida));
+    await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+    alert("¡Conexión Segura Establecida! Ya pueden hablar.");
+}
+
+// Configuración de los eventos del canal de datos
+function configurarCanal(channel) {
+    channel.onopen = () => console.log("Canal Abierto");
+    channel.onmessage = (e) => {
+        const datos = JSON.parse(e.data);
+        mostrarChoqueMensaje(datos.texto, datos.alias);
+    };
+}
+
+// Escuchar cuando el otro abre el canal
+peerConnection.ondatachannel = (event) => {
+    dataChannel = event.channel;
+    configurarCanal(dataChannel);
+};
+
+// FUNCIÓN PARA ENVIAR FOTOS/MENSAJES
+function enviarMensaje(texto) {
+    const payload = {
+        texto: texto,
+        alias: localStorage.getItem('alias') || "Anónimo",
+        id: localStorage.getItem('myID')
+    };
+    dataChannel.send(JSON.stringify(payload));
+}
+
 </body>
 </html>
