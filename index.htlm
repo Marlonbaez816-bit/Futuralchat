@@ -32,6 +32,16 @@
             <button style="background:green;">Responder</button>
         </div>
     </div>
+<div class="controles-p2p" style="margin-top: 20px; padding: 10px; border-top: 1px solid #333;">
+    <button onclick="iniciarLlamada()" style="background: #007aff;">Generar Llave de Llamada</button>
+    <button onclick="procesarLlaveExterna()" style="background: #34c759;">Pegar Llave Recibida</button>
+    
+    <div id="chat-area" style="margin-top: 20px;">
+        <input type="text" id="msj-input" placeholder="Escribe un mensaje...">
+        <button onclick="enviarMensaje(document.getElementById('msj-input').value)">Enviar con Choque</button>
+    </div>
+</div>
+
 
     <script>
         // Generar ID de 5 dígitos si no existe
