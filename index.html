@@ -2,69 +2,170 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>FuturalChat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>FuturalChat P2P</title>
     <style>
-        body { margin: 0; background: #000; font-family: -apple-system, sans-serif; color: white; padding: 20px; text-align: center; }
+        :root { --blue: #007aff; --red: #ff3b30; --green: #34c759; }
+        body { margin: 0; background: #000; font-family: -apple-system, sans-serif; color: white; height: 100vh; display: flex; flex-direction: column; }
+        
+        /* DISEÑO FUTURISTA CON DESENFOQUE */
         .glass { 
             background: rgba(255, 255, 255, 0.1); 
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); 
-            border-radius: 20px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); 
-            margin-top: 20px;
+            backdrop-filter: blur(25px); 
+            -webkit-backdrop-filter: blur(25px); 
+            border: 1px solid rgba(255,255,255,0.1); 
+            border-radius: 20px; padding: 15px; margin: 10px; 
         }
-        .btn { background: #007aff; border: none; color: white; padding: 15px; border-radius: 15px; width: 100%; font-weight: bold; margin-top: 15px; font-size: 16px; }
-        input { width: 100%; background: rgba(255,255,255,0.1); border: none; color: white; padding: 15px; border-radius: 15px; box-sizing: border-box; margin-top: 10px; }
-        #chat { height: 200px; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 15px; margin: 15px 0; padding: 10px; text-align: left; }
+
+        /* CHAT E HISTORIAL */
+        #chat-historial { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .msg { padding: 12px; border-radius: 18px; max-width: 80%; font-size: 15px; animation: choque 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .mio { background: var(--blue); align-self: flex-end; border-bottom-right-radius: 4px; }
+        .otro { background: rgba(255,255,255,0.15); align-self: flex-start; border-bottom-left-radius: 4px; }
+        .msg img, .msg video { width: 100%; border-radius: 12px; margin-top: 5px; }
+
+        @keyframes choque { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        /* CONTROLES INFERIORES */
+        .input-area { background: rgba(0,0,0,0.8); backdrop-filter: blur(20px); padding: 15px; display: flex; gap: 10px; align-items: center; border-top: 1px solid #222; }
+        input { flex: 1; background: rgba(255,255,255,0.1); border: none; color: white; padding: 12px; border-radius: 20px; outline: none; }
+        .btn-circle { width: 45px; height: 45px; border-radius: 50%; border: none; color: white; font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+        /* PANEL LLAMADA */
+        #panel-llamada { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.95); backdrop-filter: blur(40px); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; }
+        video#v-remoto { width: 90%; border-radius: 20px; border: 1px solid var(--blue); }
     </style>
 </head>
 <body>
 
-    <h1 style="color: #007aff;">FUTURALCHAT</h1>
-
-    <div class="glass">
-        <p>Tu ID: <span id="mi-id" style="font-weight:bold;">---</span></p>
-        <button class="btn" onclick="iniciarConexion()">1. Generar Llave</button>
-        <button class="btn" style="background:#34c759;" onclick="pegarLlave()">2. Pegar Llave</button>
+    <!-- CABECERA DE CONEXIÓN -->
+    <div class="glass" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0;">
+        <b>ID: <span id="mi-id" style="color:var(--blue)">---</span></b>
+        <div style="display:flex; gap:8px;">
+            <button onclick="iniciarLlamada()" style="background:var(--blue); border:none; color:white; padding:8px 15px; border-radius:12px; font-weight:bold;">Llamar</button>
+            <button onclick="pegarLlave()" style="background:var(--green); border:none; color:white; padding:8px 15px; border-radius:12px; font-weight:bold;">Pegar</button>
+        </div>
     </div>
 
-    <div id="chat">
-        <p style="color:#666;">Esperando conexión...</p>
+    <!-- AREA DE MENSAJES -->
+    <div id="chat-historial"></div>
+
+    <!-- BARRA DE ESCRIBIR -->
+    <div class="input-area">
+        <button class="btn-circle" style="background:#333" onclick="document.getElementById('f-input').click()">➕</button>
+        <input type="file" id="f-input" hidden accept="image/*,video/*" onchange="enviarArchivo(this)">
+        <input type="text" id="msj-input" placeholder="Escribe un mensaje...">
+        <button class="btn-circle" style="background:var(--blue)" onclick="enviarMensaje()">🚀</button>
     </div>
 
-    <div class="glass">
-        <input type="text" id="msj" placeholder="Escribe un mensaje...">
-        <button class="btn" onclick="enviar()">Enviar 🚀</button>
+    <!-- PANTALLA DE LLAMADA -->
+    <div id="panel-llamada">
+        <h2 id="ll-status">Llamada P2P</h2>
+        <video id="v-remoto" autoplay playsinline></video>
+        <div style="margin-top:25px; display:flex; gap:20px;">
+            <button class="btn-circle" style="background:var(--red); width:70px; height:70px;" onclick="cerrarLlamada()">✖</button>
+            <select id="calidad" onchange="cambiarCalidad(this.value)" style="background:#222; color:white; border-radius:10px; padding:10px; border:none;">
+                <option value="144">144p</option>
+                <option value="360" selected>360p</option>
+                <option value="720">720p HD</option>
+            </select>
+        </div>
     </div>
 
     <script>
-        // Lógica simplificada para asegurar carga
-        try {
-            if(!localStorage.getItem('myID')) {
-                localStorage.setItem('myID', Math.floor(10000 + Math.random() * 90000));
+        let db;
+        let pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+        let dc;
+
+        // 1. BASE DE DATOS (INDEXEDDB) - GUARDA TODO PARA SIEMPRE
+        const request = indexedDB.open("FuturalStorage", 1);
+        request.onupgradeneeded = e => e.target.result.createObjectStore("chat", { keyPath: "id", autoIncrement: true });
+        request.onsuccess = e => { db = e.target.result; cargarTodo(); };
+
+        if(!localStorage.getItem('myID')) localStorage.setItem('myID', Math.floor(10000 + Math.random() * 90000));
+        document.getElementById('mi-id').innerText = localStorage.getItem('myID');
+
+        // 2. MOSTRAR Y GUARDAR MENSAJES
+        function renderizar(obj, scroll = true) {
+            const historial = document.getElementById('chat-historial');
+            const div = document.createElement('div');
+            div.className = `msg ${obj.clase}`;
+            
+            if(obj.tipo === 'texto') div.innerText = obj.valor;
+            else if(obj.tipo === 'foto') div.innerHTML = `<img src="${obj.valor}">`;
+            else if(obj.tipo === 'video') div.innerHTML = `<video src="${obj.valor}" controls></video>`;
+
+            historial.appendChild(div);
+            if(scroll) historial.scrollTop = historial.scrollHeight;
+        }
+
+        function guardar(obj) {
+            if(db) db.transaction("chat", "readwrite").objectStore("chat").add(obj);
+        }
+
+        function cargarTodo() {
+            db.transaction("chat").objectStore("chat").openCursor().onsuccess = e => {
+                const cursor = e.target.result;
+                if(cursor) { renderizar(cursor.value, false); cursor.continue(); }
+            };
+        }
+
+        // 3. LÓGICA DE CONEXIÓN (PEER-TO-PEER)
+        async function iniciarLlamada() {
+            dc = pc.createDataChannel("chat");
+            setupDC();
+            const offer = await pc.createOffer();
+            await pc.setLocalDescription(offer);
+            prompt("COPIA tu LLAVE y envíala:", btoa(JSON.stringify(offer)));
+            document.getElementById('panel-llamada').style.display = 'flex';
+        }
+
+        async function pegarLlave() {
+            const raw = prompt("PEGA la LLAVE recibida:");
+            if(!raw) return;
+            const data = JSON.parse(atob(raw));
+            if(data.type === "offer") {
+                await pc.setRemoteDescription(new RTCSessionDescription(data));
+                const ans = await pc.createAnswer();
+                await pc.setLocalDescription(ans);
+                prompt("COPIA esta RESPUESTA de vuelta:", btoa(JSON.stringify(ans)));
+            } else {
+                await pc.setRemoteDescription(new RTCSessionDescription(data));
             }
-            document.getElementById('mi-id').innerText = localStorage.getItem('myID');
-        } catch(e) {
-            alert("Error al cargar ID: " + e);
         }
 
-        function iniciarConexion() {
-            alert("Generando llave... (Aquí irá la lógica P2P)");
+        function setupDC() {
+            dc.onmessage = e => {
+                const d = JSON.parse(e.data);
+                const obj = { valor: d.v, tipo: d.t, clase: 'otro' };
+                guardar(obj); renderizar(obj);
+                if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
+            };
+        }
+        pc.ondatachannel = e => { dc = e.channel; setupDC(); };
+
+        // 4. ACCIONES
+        function enviarMensaje() {
+            const val = document.getElementById('msj-input').value;
+            if(!val || !dc) return;
+            const obj = { valor: val, tipo: 'texto', clase: 'mio' };
+            dc.send(JSON.stringify({ v: val, t: 'texto' }));
+            guardar(obj); renderizar(obj);
+            document.getElementById('msj-input').value = '';
         }
 
-        function pegarLlave() {
-            let llave = prompt("Pega la llave de tu amigo:");
-            if(llave) alert("Conectando...");
+        function enviarArchivo(input) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                const tipo = input.files[0].type.includes('image') ? 'foto' : 'video';
+                const obj = { valor: e.target.result, tipo: tipo, clase: 'mio' };
+                if(dc) dc.send(JSON.stringify({ v: e.target.result, t: tipo }));
+                guardar(obj); renderizar(obj);
+            };
+            reader.readAsDataURL(input.files[0]);
         }
 
-        function enviar() {
-            let texto = document.getElementById('msj').value;
-            if(texto) {
-                let p = document.createElement('p');
-                p.innerText = "Tú: " + texto;
-                document.getElementById('chat').appendChild(p);
-                document.getElementById('msj').value = "";
-            }
-        }
+        function cerrarLlamada() { document.getElementById('panel-llamada').style.display = 'none'; }
     </script>
 </body>
 </html>
