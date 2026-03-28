@@ -3,56 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Futuralchat Pro | Ultra Storage</title>
+    <title>Futuralchat P2P | Privacidad Total</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com">
+    <script src="https://unpkg.com"></script>
     <style>
-        :root { --p-dark: #4A148C; --p-main: #6A0DAD; --p-soft: #F3E5F5; --white: #ffffff; --bg: #efeae2; }
+        :root { --p: #6A0DAD; --lp: #E1BEE7; --bg: #f0f2f5; --w: #ffffff; --g: #54656f; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: #dadbd3; height: 100vh; display: flex; justify-content: center; align-items: center; }
+        body { background: #d1d7db; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
 
-        .app { width: 100%; max-width: 1600px; height: 100vh; background: var(--white); display: flex; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .app { width: 100%; max-width: 1400px; height: 100vh; background: var(--w); display: flex; }
 
         /* SIDEBAR */
         .sidebar { width: 30%; min-width: 300px; border-right: 1px solid #ddd; display: flex; flex-direction: column; }
-        .sb-header { background: var(--p-main); color: white; padding: 15px; }
-        .status-dot { width: 10px; height: 10px; background: #00ff00; border-radius: 50%; display: inline-block; margin-right: 5px; box-shadow: 0 0 5px #00ff00; }
+        .sb-header { background: #ededed; padding: 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; }
+        .my-id-badge { background: var(--p); color: white; padding: 5px 10px; border-radius: 15px; font-size: 12px; font-weight: bold; cursor: pointer; }
         
-        .search-area { padding: 10px; background: #f6f6f6; }
-        .search-bar { background: white; border-radius: 20px; padding: 8px 15px; display: flex; align-items: center; border: 1px solid #eee; }
-        .search-bar input { border: none; outline: none; width: 100%; margin-left: 10px; }
+        .search-area { padding: 10px; background: #fff; }
+        .search-box { background: var(--bg); border-radius: 20px; display: flex; align-items: center; padding: 0 15px; }
+        .search-box input { border: none; background: transparent; padding: 10px; width: 100%; outline: none; }
 
         .chat-list { flex: 1; overflow-y: auto; }
-        .contact { display: flex; padding: 15px; border-bottom: 1px solid #f2f2f2; cursor: pointer; transition: 0.3s; align-items: center; }
-        .contact:hover { background: var(--p-soft); }
-        .avatar { width: 45px; height: 45px; border-radius: 50%; background: var(--p-main); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .contact { display: flex; padding: 15px; border-bottom: 1px solid #f2f2f2; cursor: pointer; transition: 0.2s; align-items: center; }
+        .contact:hover { background: #f5f5f5; }
+        .contact.active { background: #ebebeb; }
+        .avatar { width: 45px; height: 45px; border-radius: 50%; background: var(--p); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 15px; }
 
-        /* MAIN CHAT */
-        .main { flex: 1; display: flex; flex-direction: column; background: var(--bg); background-image: url('https://user-images.githubusercontent.com'); }
-        .main-header { background: #ededed; padding: 10px 20px; display: flex; align-items: center; border-left: 1px solid #ddd; }
-        .header-info { margin-left: 15px; flex: 1; }
-        .online-text { font-size: 12px; color: #666; }
-
+        /* CHAT WINDOW */
+        .main { flex: 1; display: flex; flex-direction: column; background: #efeae2 url('https://user-images.githubusercontent.com'); }
+        .main-header { background: #ededed; padding: 10px 15px; display: flex; align-items: center; border-left: 1px solid #ddd; }
+        
         .msg-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; }
         
         /* ANIMACIONES AIRDROP */
-        @keyframes airDropIn { 
-            0% { transform: scale(0.5) translateY(40px); opacity: 0; }
-            100% { transform: scale(1) translateY(0); opacity: 1; }
-        }
-
-        .bubble { max-width: 65%; padding: 8px 12px; border-radius: 12px; font-size: 14px; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.1); animation: airDropIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .sent { align-self: flex-end; background: #E1BEE7; border-top-right-radius: 2px; }
-        .received { align-self: flex-start; background: white; border-top-left-radius: 2px; }
+        @keyframes air { from { opacity: 0; transform: scale(0.7) translateY(30px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .bubble { max-width: 65%; padding: 8px 12px; border-radius: 10px; font-size: 14.5px; box-shadow: 0 1px 1px rgba(0,0,0,0.1); animation: air 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); position: relative; }
+        .sent { align-self: flex-end; background: var(--lp); border-top-right-radius: 0; }
+        .received { align-self: flex-start; background: white; border-top-left-radius: 0; }
         .bubble img, .bubble video { width: 100%; border-radius: 8px; margin-top: 5px; }
+        .time { font-size: 10px; color: #888; text-align: right; display: block; margin-top: 4px; }
 
-        /* FOOTER & OPCIONES */
         .footer { background: #f0f2f5; padding: 10px; display: flex; align-items: center; gap: 10px; }
         .footer input { flex: 1; border: none; padding: 12px; border-radius: 20px; outline: none; }
-        .btn { color: var(--p-main); font-size: 20px; cursor: pointer; transition: 0.2s; }
-        .btn:hover { transform: scale(1.2); }
-
-        /* MODAL RASTREO */
-        #map-link { color: #1a73e8; text-decoration: underline; cursor: pointer; }
+        .btn { color: var(--p); font-size: 22px; cursor: pointer; transition: 0.2s; }
+        #empty { position: absolute; inset: 0; background: #f8f9fa; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 5; text-align: center; }
     </style>
 </head>
 <body>
@@ -60,144 +53,170 @@
 <div class="app">
     <aside class="sidebar">
         <div class="sb-header">
-            <h3><span class="status-dot"></span> Futuralchat</h3>
-            <p style="font-size: 11px; opacity: 0.8;">MI ID: <span id="myID"></span> | En Línea</p>
+            <div class="my-id-badge" onclick="copyID()" title="Click para copiar">MI ID: <span id="myID">...</span></div>
+            <i class="fas fa-circle-notch" style="color:var(--g)"></i>
         </div>
         <div class="search-area">
-            <div class="search-bar">
-                <i class="fas fa-location-arrow btn" onclick="shareLocation()" title="Rastrear/Compartir mi ubicación"></i>
-                <input type="text" id="targetID" placeholder="Buscar ID de usuario...">
-                <i class="fas fa-plus btn" onclick="addChat()"></i>
+            <div class="search-box">
+                <input type="text" id="targetID" placeholder="Ingresa ID de amigo...">
+                <i class="fas fa-plus-circle btn" onclick="startNewChat()"></i>
             </div>
         </div>
         <div class="chat-list" id="contacts"></div>
     </aside>
 
     <main class="main">
-        <header class="main-header" id="chatHeader" style="display:none;">
-            <div class="avatar" id="activeAvatar">?</div>
-            <div class="header-info">
-                <h4 id="activeName">Usuario</h4>
-                <span class="online-text" id="onlineStatus">En línea ahora</span>
+        <div id="empty">
+            <i class="fas fa-shield-alt" style="font-size:70px; color:#e9edef; margin-bottom:15px"></i>
+            <h2>Futuralchat P2P</h2>
+            <p>Conexión directa entre dispositivos.<br>Nada se guarda en la nube.</p>
+        </div>
+        <header class="main-header" style="display:none" id="mHeader">
+            <div class="avatar" id="hAvatar">?</div>
+            <div style="flex:1; margin-left:15px">
+                <h4 id="hName">Usuario</h4>
+                <span style="font-size:12px; color:#25D366" id="hStatus">En línea (P2P)</span>
             </div>
-            <div class="header-btns">
-                <i class="fas fa-video btn" style="margin-right:15px"></i>
-                <i class="fas fa-phone btn"></i>
-            </div>
+            <i class="fas fa-location-arrow btn" onclick="sendLoc()" title="Enviar ubicación"></i>
         </header>
 
-        <div class="msg-box" id="msgContainer">
-            <!-- Los mensajes aparecerán aquí -->
-        </div>
+        <div class="msg-box" id="msgBox"></div>
 
         <footer class="footer">
             <label for="fileIn"><i class="fas fa-paperclip btn"></i></label>
-            <input type="file" id="fileIn" hidden onchange="handleFile(this)">
-            <input type="text" id="mainInput" placeholder="Escribe un mensaje..." onkeypress="if(event.key==='Enter') sendText()">
-            <i class="fas fa-paper-plane btn" onclick="sendText()"></i>
+            <input type="file" id="fileIn" hidden accept="image/*,video/*" onchange="sendMedia(this)">
+            <input type="text" id="mInput" placeholder="Escribe un mensaje..." onkeypress="if(event.key==='Enter') sendMsg()">
+            <i class="fas fa-paper-plane btn" onclick="sendMsg()"></i>
         </footer>
     </main>
 </div>
 
 <script>
-    // BASE DE DATOS LOCAL (IndexedDB para videos y fotos pesadas)
-    let db;
-    const request = indexedDB.open("FuturalDB", 1);
-    request.onupgradeneeded = e => {
-        db = e.target.result;
-        db.createObjectStore("messages", { keyPath: "id", autoIncrement: true });
-        db.createObjectStore("contacts", { keyPath: "userId" });
-    };
-    request.onsuccess = e => { db = e.target.result; loadContacts(); };
-
-    // ID PROPIO
-    const myID = localStorage.getItem('myID') || Math.floor(Math.random()*99999);
-    localStorage.setItem('myID', myID);
+    let peer, db, activeConn, currentChat = null;
+    const myID = localStorage.getItem('p2p_id') || Math.floor(10000 + Math.random() * 90000);
+    localStorage.setItem('p2p_id', myID);
     document.getElementById('myID').innerText = myID;
 
-    let activeChat = null;
+    // BASE DE DATOS INTERNA (IndexedDB)
+    const req = indexedDB.open("P2PChatDB", 1);
+    req.onupgradeneeded = e => {
+        const d = e.target.result;
+        d.createObjectStore("msgs", { keyPath: "id", autoIncrement: true });
+        d.createObjectStore("users", { keyPath: "uid" });
+    };
+    req.onsuccess = e => { db = e.target.result; renderList(); };
 
-    function addChat() {
-        const id = document.getElementById('targetID').value;
-        if(!id) return;
-        const transaction = db.transaction(["contacts"], "readwrite");
-        transaction.objectStore("contacts").put({ userId: id, name: "Usuario " + id });
-        document.getElementById('targetID').value = "";
-        loadContacts();
-    }
+    // INICIALIZAR CONEXIÓN P2P
+    peer = new Peer(myID);
+    peer.on('connection', conn => {
+        activeConn = conn;
+        setupConn(conn);
+        saveUser(conn.peer);
+    });
 
-    function loadContacts() {
-        const list = document.getElementById('contacts');
-        list.innerHTML = "";
-        db.transaction("contacts").objectStore("contacts").getAll().onsuccess = e => {
-            e.target.result.forEach(c => {
-                const div = document.createElement('div');
-                div.className = 'contact';
-                div.onclick = () => selectChat(c.userId);
-                div.innerHTML = `<div class="avatar">${c.userId.toString().substring(0,2)}</div><div style="margin-left:15px"><h4>${c.name}</h4><p style="font-size:12px; color:green">En línea</p></div>`;
-                list.appendChild(div);
-            });
-        };
-    }
-
-    function selectChat(id) {
-        activeChat = id;
-        document.getElementById('chatHeader').style.display = 'flex';
-        document.getElementById('activeName').innerText = "ID: " + id;
-        document.getElementById('activeAvatar').innerText = id.toString().substring(0,2);
-        loadMessages();
-    }
-
-    function sendText() {
-        const txt = document.getElementById('mainInput').value;
-        if(!txt || !activeChat) return;
-        saveMsg({ chatId: activeChat, type: 'text', content: txt, sender: 'me' });
-        document.getElementById('mainInput').value = "";
-    }
-
-    function shareLocation() {
-        if (!navigator.geolocation) return alert("GPS no soportado");
-        navigator.geolocation.getCurrentPosition(pos => {
-            const link = `https://www.google.com{pos.coords.latitude},${pos.coords.longitude}`;
-            saveMsg({ chatId: activeChat, type: 'location', content: link, sender: 'me' });
+    function setupConn(conn) {
+        conn.on('data', data => {
+            saveMsg({ chat: conn.peer, ...data, sender: 'other' });
+            if(activeChat !== conn.peer) renderList();
         });
     }
 
-    function handleFile(input) {
+    function startNewChat() {
+        const id = document.getElementById('targetID').value.trim();
+        if(!id || id == myID) return;
+        saveUser(id);
+        openChat(id);
+    }
+
+    function openChat(id) {
+        activeChat = id;
+        document.getElementById('empty').style.display = 'none';
+        document.getElementById('mHeader').style.display = 'flex';
+        document.getElementById('hName').innerText = "ID: " + id;
+        document.getElementById('hAvatar').innerText = id.toString().substring(0,2);
+        activeConn = peer.connect(id);
+        setupConn(activeConn);
+        loadMsgs();
+        renderList();
+    }
+
+    function sendMsg() {
+        const val = document.getElementById('mInput').value;
+        if(!val || !activeChat) return;
+        const msg = { type: 'text', content: val };
+        if(activeConn) activeConn.send(msg);
+        saveMsg({ chat: activeChat, ...msg, sender: 'me' });
+        document.getElementById('mInput').value = "";
+    }
+
+    function sendMedia(input) {
         const file = input.files[0];
         const reader = new FileReader();
         reader.onload = e => {
-            const type = file.type.split('/')[0]; // image o video
-            saveMsg({ chatId: activeChat, type: type, content: e.target.result, sender: 'me' });
+            const msg = { type: file.type.startsWith('image') ? 'img' : 'video', content: e.target.result };
+            if(activeConn) activeConn.send(msg);
+            saveMsg({ chat: activeChat, ...msg, sender: 'me' });
         };
         reader.readAsDataURL(file);
     }
 
-    function saveMsg(msg) {
-        msg.time = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-        const tx = db.transaction("messages", "readwrite");
-        tx.objectStore("messages").add(msg);
-        tx.oncomplete = loadMessages;
+    function sendLoc() {
+        navigator.geolocation.getCurrentPosition(p => {
+            const link = `https://www.google.com{p.coords.latitude},${p.coords.longitude}`;
+            const msg = { type: 'text', content: "📍 Mi ubicación: " + link };
+            if(activeConn) activeConn.send(msg);
+            saveMsg({ chat: activeChat, ...msg, sender: 'me' });
+        });
     }
 
-    function loadMessages() {
-        const box = document.getElementById('msgContainer');
+    function saveMsg(obj) {
+        obj.time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        const tx = db.transaction("msgs", "readwrite");
+        tx.objectStore("msgs").add(obj);
+        tx.oncomplete = loadMsgs;
+    }
+
+    function saveUser(uid) {
+        const tx = db.transaction("users", "readwrite");
+        tx.objectStore("users").put({ uid: uid });
+        tx.oncomplete = renderList;
+    }
+
+    function loadMsgs() {
+        const box = document.getElementById('msgBox');
         box.innerHTML = "";
-        db.transaction("messages").objectStore("messages").getAll().onsuccess = e => {
-            e.target.result.filter(m => m.chatId == activeChat).forEach(m => {
-                const div = document.createElement('div');
-                div.className = `bubble ${m.sender === 'me' ? 'sent' : 'received'}`;
-                if(m.type === 'text') div.innerText = m.content;
-                if(m.type === 'location') div.innerHTML = `📍 Mi ubicación: <a href="${m.content}" target="_blank" id="map-link">Ver en Mapa</a>`;
-                if(m.type === 'image') div.innerHTML = `<img src="${m.content}">`;
-                if(m.type === 'video') div.innerHTML = `<video src="${m.content}" controls></video>`;
-                div.innerHTML += `<span style="font-size:10px; display:block; opacity:0.6; margin-top:5px">${m.time}</span>`;
-                box.appendChild(div);
+        db.transaction("msgs").objectStore("msgs").getAll().onsuccess = e => {
+            e.target.result.filter(m => m.chat == activeChat).forEach(m => {
+                const d = document.createElement('div');
+                d.className = `bubble ${m.sender === 'me' ? 'sent' : 'received'}`;
+                if(m.type === 'text') d.innerText = m.content;
+                else if(m.type === 'img') d.innerHTML = `<img src="${m.content}">`;
+                else if(m.type === 'video') d.innerHTML = `<video src="${m.content}" controls></video>`;
+                d.innerHTML += `<span class="time">${m.time}</span>`;
+                box.appendChild(d);
             });
             box.scrollTop = box.scrollHeight;
         };
     }
-</script>
 
+    function renderList() {
+        const list = document.getElementById('contacts');
+        list.innerHTML = "";
+        db.transaction("users").objectStore("users").getAll().onsuccess = e => {
+            e.target.result.forEach(u => {
+                const d = document.createElement('div');
+                d.className = `contact ${activeChat == u.uid ? 'active' : ''}`;
+                d.onclick = () => openChat(u.uid);
+                d.innerHTML = `<div class="avatar">${u.uid.toString().substring(0,2)}</div><div><h4>ID: ${u.uid}</h4><p>Toca para chatear</p></div>`;
+                list.appendChild(d);
+            });
+        };
+    }
+
+    function copyID() {
+        navigator.clipboard.writeText(myID);
+        alert("Tu ID ha sido copiado: " + myID);
+    }
+</script>
 </body>
 </html>
