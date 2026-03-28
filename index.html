@@ -2,198 +2,234 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Private Chat Security</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Futuralchat Mobile</title>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com"></script>
+    <script src="https://www.gstatic.com"></script>
+
     <style>
-        /* Paleta de Colores: Blanco y Púrpura */
+        /* ESTILO IPDROP OPTIMIZADO PARA MÓVIL */
         :root {
-            --bg-principal: #ffffff;
-            --purpura-apple: #a370f7; /* Púrpura vibrante */
-            --purpura-suave: #f3ebff;
-            --texto: #1d1d1f;
+            --glass: rgba(255, 255, 255, 0.12);
+            --border: rgba(255, 255, 255, 0.2);
+            --accent: #4ecca3;
         }
 
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            background: var(--bg-principal); 
-            color: var(--texto); 
-            margin: 0; 
-            display: flex; 
-            flex-direction: column; 
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #0f172a;
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
             height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
             overflow: hidden;
         }
 
-        header { 
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
-            padding: 20px; 
-            text-align: center; 
-            color: var(--purpura-apple);
-            font-weight: 700;
-            font-size: 1.1em;
-            letter-spacing: 1px;
-            border-bottom: 1px solid #eee;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        #pantalla-chat { 
-            flex: 1; 
-            overflow-y: auto; 
-            padding: 20px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 12px;
-            scroll-behavior: smooth;
-        }
-
-        /* --- ANIMACIÓN ESTILO AIRDROP --- */
-        @keyframes airdropIn {
-            0% { opacity: 0; transform: scale(0.5) translateY(20px); }
-            70% { transform: scale(1.05) translateY(-2px); }
-            100% { opacity: 1; transform: scale(1) translateY(0); }
-        }
-
-        .burbuja {
-            padding: 12px 18px;
-            border-radius: 20px;
-            max-width: 75%;
-            font-size: 0.95em;
-            line-height: 1.4;
+        .mobile-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            padding: 25px;
+            width: 85%;
+            max-width: 350px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            text-align: center;
             position: relative;
-            animation: airdropIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Efecto rebote */
-            word-wrap: break-word;
-            box-shadow: 0 4px 15px rgba(163, 112, 247, 0.1);
         }
 
-        /* Mensaje recibido (Blanco/Gris suave) */
-        .recibido {
-            background: #f2f2f7;
-            align-self: flex-start;
-            color: #000;
-            border-bottom-left-radius: 5px;
-        }
-
-        /* Mensaje enviado (Púrpura) */
-        .enviado {
-            background: var(--purpura-apple);
-            align-self: flex-end;
+        /* CARTELITO VERIFICADO ESTILO FLOTANTE */
+        .verified-badge {
+            background: #0084ff;
             color: white;
-            border-bottom-right-radius: 5px;
-        }
-
-        .burbuja b {
-            display: block;
-            font-size: 0.7em;
-            margin-bottom: 4px;
-            opacity: 0.8;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 50px;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(0, 132, 255, 0.4);
         }
 
-        .area-entrada { 
-            padding: 20px; 
-            display: flex; 
-            gap: 12px; 
-            background: white;
-            border-top: 1px solid #f0f0f0;
+        .auth-tabs {
+            display: flex;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            padding: 4px;
         }
 
-        input { 
-            flex: 1; 
-            padding: 14px 20px; 
-            border: 1.5px solid #eee; 
-            border-radius: 30px; 
-            outline: none; 
-            transition: border 0.3s;
-            font-size: 1em;
-        }
-
-        input:focus { border-color: var(--purpura-apple); }
-
-        button { 
-            background: var(--purpura-apple); 
-            color: white; 
-            border: none; 
-            padding: 0 25px; 
-            border-radius: 30px; 
-            cursor: pointer; 
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            color: #94a3b8;
             font-weight: 600;
-            transition: transform 0.2s;
+            font-size: 14px;
+            border-radius: 10px;
+            transition: 0.3s;
         }
 
-        button:active { transform: scale(0.9); }
+        .tab-btn.active {
+            background: var(--accent);
+            color: #0f172a;
+        }
+
+        input {
+            width: 100%;
+            box-sizing: border-box;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            padding: 14px;
+            margin: 8px 0;
+            border-radius: 14px;
+            color: white;
+            font-size: 16px; /* Evita zoom automático en iPhone */
+            outline: none;
+        }
+
+        button.action-btn {
+            width: 100%;
+            padding: 15px;
+            background: var(--accent);
+            color: #0f172a;
+            border: none;
+            border-radius: 14px;
+            font-weight: bold;
+            font-size: 16px;
+            margin-top: 15px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(78, 204, 163, 0.3);
+        }
+
+        /* PERFIL DE USUARIO MÓVIL */
+        .user-profile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 4px solid var(--accent);
+            object-fit: cover;
+            margin-bottom: 12px;
+        }
+
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-    <header>PRIVATE CHAT SECURITY</header>
+    <div class="mobile-card">
+        <div class="verified-badge">✓ Verificado</div>
 
-    <div id="pantalla-chat"></div>
+        <!-- SECCIÓN DE ACCESO -->
+        <div id="section-auth">
+            <div class="auth-tabs">
+                <button id="t-login" class="tab-btn active" onclick="switchTab('login')">Entrar</button>
+                <button id="t-reg" class="tab-btn" onclick="switchTab('reg')">Registro</button>
+            </div>
 
-    <div class="area-entrada">
-        <input type="text" id="mensaje-input" placeholder="Escribe un mensaje seguro..." autocomplete="off">
-        <button onclick="enviar()">Enviar</button>
+            <div id="form-login">
+                <input type="email" id="l-email" placeholder="Correo electrónico">
+                <input type="password" id="l-pass" placeholder="Contraseña">
+                <button class="action-btn" onclick="login()">Iniciar Sesión</button>
+            </div>
+
+            <div id="form-reg" class="hidden">
+                <input type="text" id="r-name" placeholder="Nombre completo">
+                <input type="text" id="r-photo" placeholder="Link de foto (Avatar)">
+                <input type="email" id="r-email" placeholder="Tu Email">
+                <input type="password" id="r-pass" placeholder="Tu Contraseña">
+                <button class="action-btn" onclick="register()">Crear Cuenta</button>
+            </div>
+        </div>
+
+        <!-- SECCIÓN CUENTA ACTIVA -->
+        <div id="section-user" class="hidden">
+            <div class="user-profile">
+                <img id="u-avatar" src="" class="avatar">
+                <h3 id="u-name" style="margin: 5px 0;"></h3>
+                <p style="font-size: 13px; color: #94a3b8; margin-bottom: 20px;">Sesión protegida y activa</p>
+                <button class="action-btn" style="background: #ef4444; color: white;" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com";
-        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com";
-
+    <script>
+        // CONFIGURACIÓN DE TU IMAGEN
         const firebaseConfig = {
-            apiKey: "AIzaSyBViXmpHDthxQog-p79Bv9TwSCS1EYbjPU",
-            authDomain: "futuralchat.firebaseapp.com",
-            projectId: "futuralchat",
-            storageBucket: "futuralchat.firebasestorage.app",
-            messagingSenderId: "888367297347",
-            appId: "1:888367297347:web:a4eba58b25edfdf5b5876f6",
-            measurementId: "G-7WHRFHR9NW"
+          apiKey: "AIzaSyBVlXapbDchsQog-d79Bv9Tw",
+          authDomain: "futuralchat.firebaseapp.com",
+          projectId: "futuralchat",
+          storageBucket: "futuralchat.firebasestorage.app",
+          messagingSenderId: "888367297347",
+          appId: "1:888367297347:web:s4abe58b20ec9e11516086"
         };
+        
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        // PERSISTENCIA MÓVIL: Mantiene la sesión abierta al cerrar la app
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                document.getElementById('section-auth').classList.add('hidden');
+                document.getElementById('section-user').classList.remove('hidden');
+                document.getElementById('u-name').innerText = user.displayName || "Usuario";
+                document.getElementById('u-avatar').src = user.photoURL || "https://cdn-icons-png.flaticon.com";
+            } else {
+                document.getElementById('section-auth').classList.remove('hidden');
+                document.getElementById('section-user').classList.add('hidden');
+            }
+        });
 
-        // Identificación de sesión personal (Nombre único por teléfono)
-        let miNombre = localStorage.getItem("user_nick");
-        if (!miNombre) {
-            miNombre = prompt("Tu nombre para Private Chat:") || "Agente";
-            localStorage.setItem("user_nick", miNombre);
+        function switchTab(mode) {
+            const isLogin = mode === 'login';
+            document.getElementById('form-login').classList.toggle('hidden', !isLogin);
+            document.getElementById('form-reg').classList.toggle('hidden', isLogin);
+            document.getElementById('t-login').classList.toggle('active', isLogin);
+            document.getElementById('t-reg').classList.toggle('active', !isLogin);
         }
 
-        // --- ENVIAR ---
-        window.enviar = async () => {
-            const input = document.getElementById("mensaje-input");
-            if (input.value.trim() === "") return;
+        async function register() {
+            const n = document.getElementById('r-name').value;
+            const ph = document.getElementById('r-photo').value;
+            const e = document.getElementById('r-email').value;
+            const p = document.getElementById('r-pass').value;
+            if(!n || !e || !p) return alert("Llena todos los datos");
 
             try {
-                await addDoc(collection(db, "mensajes_seguros"), {
-                    user: miNombre,
-                    msg: input.value,
-                    time: serverTimestamp()
+                const res = await auth.createUserWithEmailAndPassword(e, p);
+                await res.user.updateProfile({
+                    displayName: n,
+                    photoURL: ph || "https://cdn-icons-png.flaticon.com"
                 });
-                input.value = "";
-            } catch (e) { console.error(e); }
-        };
+                alert("Cuenta lista.");
+            } catch (err) { alert("Error: " + err.message); }
+        }
 
-        // --- RECIBIR Y ANIMAR ---
-        const q = query(collection(db, "mensajes_seguros"), orderBy("time", "asc"));
-        onSnapshot(q, (snapshot) => {
-            const container = document.getElementById("pantalla-chat");
-            container.innerHTML = "";
-            snapshot.forEach((doc) => {
-                const d = doc.data();
-                const div = document.createElement("div");
-                
-                // Si el nombre es el mío, burbuja púrpura a la derecha. Si no, gris a la izquierda.
-                const esMio = d.user === miNombre;
-                div.className = `burbuja ${esMio ? 'enviado' : 'recibido'}`;
-                
-                div.innerHTML = `<b>${d.user}</b>${d.msg}`;
-                container.appendChild(div);
-            });
-            container.scrollTop = container.scrollHeight;
-        });
+        function login() {
+            const e = document.getElementById('l-email').value;
+            const p = document.getElementById('l-pass').value;
+            auth.signInWithEmailAndPassword(e, p).catch(err => alert(err.message));
+        }
+
+        function logout() {
+            auth.signOut().then(() => alert("Sesión cerrada"));
+        }
     </script>
 </body>
 </html>
