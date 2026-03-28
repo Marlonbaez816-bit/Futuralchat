@@ -55,6 +55,10 @@
         <button onclick="enviarMensaje(document.getElementById('msj-input').value)">Enviar con Choque</button>
     </div>
 </div>
+<div class="voice-controls" style="margin-top: 10px;">
+    <button id="btn-record" onclick="toggleGrabacion()" style="background: #ff3b30; border-radius: 50%; width: 50px; height: 50px;">🎤</button>
+    <span id="voice-status">Listo</span>
+</div>
 
 
     <script>
