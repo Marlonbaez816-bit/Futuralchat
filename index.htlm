@@ -23,6 +23,20 @@
     </div>
 
     <!-- Panel de Llamada (Oculto por defecto) -->
+<!-- Dentro del panel-llamada -->
+<div class="selector-calidad" style="margin-top: 15px;">
+    <select id="calidad-video" onchange="actualizarCalidad(this.value)" style="background: rgba(255,255,255,0.2); color: white; border: none; padding: 5px 10px; border-radius: 10px; backdrop-filter: blur(10px);">
+        <option value="144">Baja (144p)</option>
+        <option value="360">Media (360p)</option>
+        <option value="720" selected>HD (720p)</option>
+    </select>
+</div>
+
+<!-- Elemento de Video donde se verá la otra persona -->
+<video id="video-remoto" autoplay playsinline style="width: 90%; border-radius: 20px; margin-top: 10px; box-shadow: 0 0 30px rgba(255,255,255,0.1);"></video>
+<!-- Tu propio video (miniatura) -->
+<video id="video-local" autoplay playsinline muted style="width: 80px; height: 120px; position: absolute; bottom: 100px; right: 20px; border-radius: 10px; border: 2px solid white; object-fit: cover;"></video>
+
     <div id="panel-llamada" class="panel-llamada" style="display:none;">
         <img id="llamada-foto" src="" class="avatar-perfil">
         <h1 id="llamada-alias">Nombre</h1>
